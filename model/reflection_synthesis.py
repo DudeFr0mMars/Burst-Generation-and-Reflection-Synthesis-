@@ -62,9 +62,9 @@ class ReflectionSynthesisModel(BaseModel):
         One = torch.ones(input_A.shape)
             
         if len(self.gpu_ids) > 0:
-            input_A = input_A.cuda(self.gpu_ids[0], async=True)
-            input_B = input_B.cuda(self.gpu_ids[0], async=True)
-            One = One.cuda(self.gpu_ids[0], async=True)
+            input_A = input_A.cuda(self.gpu_ids[0], non_blocking=True)
+            input_B = input_B.cuda(self.gpu_ids[0], non_blocking=True)
+            One = One.cuda(self.gpu_ids[0], non_blocking=True)
                         
         self.input_A = input_A
         self.input_A_origin = input_A_origin
@@ -72,7 +72,7 @@ class ReflectionSynthesisModel(BaseModel):
         self.One = One
         if self.opt.phase == 'train':
             input_C = input['C']
-            input_C = input_C.cuda(self.gpu_ids[0], async=True)
+            input_C = input_C.cuda(self.gpu_ids[0], non_blocking=True)
             self.input_C = input_C
         self.image_paths = input['A_paths']
 
