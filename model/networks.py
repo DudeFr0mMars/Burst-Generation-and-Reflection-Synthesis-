@@ -233,7 +233,7 @@ class ResnetGenerator(nn.Module):
         model += [nn.ReflectionPad2d(3)]
         model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
         model += [nn.Sigmoid()]
-        # model += [nn.Dropout(0.1)]
+        model += [nn.Dropout(0.1)]
 
         self.model = nn.Sequential(*model)
 
