@@ -1,6 +1,6 @@
 import argparse
 import os
-from util import util
+import util.util as util
 import torch
 
 
@@ -12,7 +12,8 @@ class BaseOptions():
     def initialize(self):
         self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, trainC, etc)')
         self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
-        self.parser.add_argument('--loadSize', type=int, default=256, help='scale images to this size')
+        self.parser.add_argument('--loadSizeH', type=int, default=256, help='scale images to this height')
+        self.parser.add_argument('--loadSizeW', type=int, default=256, help='scale images to this width')
         self.parser.add_argument('--input_nc', type=int, default=6, help='# of input image channels')
         self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
         self.parser.add_argument('--ngf', type=int, default=64, help='# of gen filters in first conv layer')
@@ -26,7 +27,7 @@ class BaseOptions():
         self.parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints_synthesis', help='models are saved here')
         self.parser.add_argument('--norm', type=str, default='instance', help='instance normalization or batch normalization')
         self.parser.add_argument('--serial_batches', action='store_false', help='if true, takes images in order to make batches, otherwise takes them randomly')
-        self.parser.add_argument('--no_dropout', action='store_false', help='no dropout for the generator') 
+        self.parser.add_argument('--no_dropout', action='store_false', help='no dropout for the generator')
         self.parser.add_argument('--max_dataset_size', type=int, default=float("inf"),
                                  help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
         self.parser.add_argument('--init_type', type=str, default='normal', help='network initialization [normal|xavier|kaiming|orthogonal]')

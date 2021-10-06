@@ -22,7 +22,8 @@ class SynthesisDataset(BaseDataset):
     def initialize(self, opt):
         self.opt = opt
         self.root = opt.dataroot
-        self.loadSize = opt.loadSize
+        self.loadSizeH = opt.loadSizeH
+        self.loadSizeW = opt.loadSizeW
         self.dir_A = os.path.join(opt.dataroot, opt.phase + 'A')
         self.dir_B = os.path.join(opt.dataroot, opt.phase + 'B')
 
@@ -41,19 +42,24 @@ class SynthesisDataset(BaseDataset):
             self.C_paths = sorted(self.C_paths)
             self.C_size = len(self.C_paths)
 
-    def get_transform(self, img):
-        width = img.size[0]
-        height = img.size[1]
+    def get_resized(self, img):
 
         transform_list = []
-        if width < height:
-            transform_list.append(transforms.RandomCrop((width, width)))
-        else:
-            transform_list.append(transforms.RandomCrop((height, height)))
-        transform_list.append(transforms.Resize((self.loadSize, self.loadSize)))
+        transform_list.append(transforms.Resize((self.loadSizeH, self.loadSizeW)))
         transform_list.append(transforms.ToTensor())
-        transform_list.append(transforms.Normalize((0.5, 0.5, 0.5),
-                                                   (0.5, 0.5, 0.5)))
+        transform_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+        transform = transforms.Compose(transform_list)
+        img = transform(img)
+
+        return img
+
+    def get_crop_resized(self, img):
+
+        transform_list = []
+        transform_list.append(transforms.CenterCrop((img.size[1]-img.size[1]%self.loadSizeH, img.size[0]-img.size[0]%self.loadSizeW)))
+        transform_list.append(transforms.Resize((self.loadSizeH, self.loadSizeW)))
+        transform_list.append(transforms.ToTensor())
+        transform_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
         transform = transforms.Compose(transform_list)
         img = transform(img)
 
@@ -67,16 +73,10 @@ class SynthesisDataset(BaseDataset):
 
         A_img = Image.open(A_path).convert('RGB')
         B_img = Image.open(B_path).convert('RGB')
-        group = [A_img, B_img]
-        index = np.random.randint(0, 2)
-        A_img = group[index]
-        B_img = group[1-index]
         A_img_origin = A_img
 
         if self.opt.phase == 'train':
-            type_list = ['focused', 'defocused', 'ghosting']
-            index_type = random.randint(0, 2)
-            reflection_type = type_list[index_type]
+            reflection_type = ['defocused']
         elif self.opt.phase == 'test':
             reflection_type = self.opt.type
 
@@ -87,10 +87,7 @@ class SynthesisDataset(BaseDataset):
         # Defocused reflection
         elif reflection_type == 'defocused':
             A_img = np.asarray(A_img)
-            k_sz = np.linspace(5,10,80)
-            sigma = k_sz[np.random.randint(0, len(k_sz))]
-            sz = int(2*np.ceil(2*sigma)+1)
-            A_img = cv2.GaussianBlur(A_img,(sz,sz),sigma,sigma,0)
+            A_img = cv2.GaussianBlur(A_img,(5,5),3,3,0)
             A_img = Image.fromarray(A_img.astype(np.uint8))
         # Ghosting reflection
         elif reflection_type == 'ghosting':
@@ -108,15 +105,15 @@ class SynthesisDataset(BaseDataset):
             A_img = transforms.functional.crop(A_img, shift_y, shift_x, cols-shift_y, rows-shift_x)
             A_img = A_img.resize((rows, cols), Image.BILINEAR)
 
-        A = self.get_transform(A_img)
-        A_origin = self.get_transform(A_img_origin)
-        B = self.get_transform(B_img)
+        A = self.get_crop_resized(A_img)
+        A_origin = self.get_crop_resized(A_img_origin)
+        B = self.get_resized(B_img)
 
         if self.opt.phase == 'train':
             index_C = random.randint(0, self.C_size - 1)
             C_path = self.C_paths[index_C]
             C_img = Image.open(C_path).convert('RGB')
-            C = self.get_transform(C_img)
+            C = self.get_resized(C_img)
 
         if self.opt.phase == 'train':
             return {'A': A, 'A_origin': A_origin, 'B': B, 'C': C,

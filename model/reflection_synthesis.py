@@ -126,15 +126,15 @@ class ReflectionSynthesisModel(BaseModel):
         reflection = self.real_A
         transmission = self.real_B
         concat_AB = torch.cat((transmission, reflection), dim=1)
-        W = self.netG(concat_AB)
-        W_revise = self.One - W
-        mix_AB = W_revise * transmission + W * reflection
+        W_mask = self.netG(concat_AB)
+        W_revise = self.One - W_mask
+        mix_AB = W_revise * transmission + W_mask * reflection
         pred_fake = self.netD(mix_AB)
         loss_GAN = self.criterionGAN(pred_fake, True)
 
         # for smoothness loss
-        smooth_y_W = self.criterionL2(W[:, :, 1:, :], W.detach()[:, :, :-1, :])
-        smooth_x_W = self.criterionL2(W[:, :, :, 1:], W.detach()[:, :, :, :-1])
+        smooth_y_W = self.criterionL2(W_mask[:, :, 1:, :], W_mask.detach()[:, :, :-1, :])
+        smooth_x_W = self.criterionL2(W_mask[:, :, :, 1:], W_mask.detach()[:, :, :, :-1])
         loss_Smooth_W = smooth_y_W + smooth_x_W
 
         loss_G = loss_GAN + loss_Smooth_W * 10
@@ -144,7 +144,7 @@ class ReflectionSynthesisModel(BaseModel):
         self.mix_AB = mix_AB.data
         self.reflection = reflection.data
         self.transmission = transmission.data
-        self.W = W.data
+        self.W_mask = W_mask.data
         self.W_revise = W_revise.data
 
         self.loss_GAN = loss_GAN.item()
@@ -173,9 +173,10 @@ class ReflectionSynthesisModel(BaseModel):
         transmission = util.tensor2im(self.transmission)
         real_C = util.tensor2im(self.input_C)
         mix_AB = util.tensor2im(self.mix_AB)
+        W_mask = util.tensor2im(self.W_mask)
 
         ret_visuals = OrderedDict([('reflection', reflection),('transmission', transmission),
-                                   ('real_C', real_C), ('mix_AB', mix_AB)])
+                                   ('real_C', real_C), ('mix_AB', mix_AB), ('W', W_mask)])
         return ret_visuals
 
     def get_current_visuals_test(self):
