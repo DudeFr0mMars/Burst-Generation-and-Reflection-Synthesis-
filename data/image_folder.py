@@ -59,7 +59,6 @@ def make_dataset(dir):
 
                     M = cv2.getPerspectiveTransform(pts1, pts2)
                     dst = cv2.warpPerspective(result, M, (cols, rows))
-                    cv2.imwrite(f'zen-{i}.jpg', dst)
                     row, col,chan = result.shape
                     center = tuple(np.array([row, col]) / 2)
                     M = np.float32([[1, 0, 100], [0, 1, 50]])
@@ -68,7 +67,7 @@ def make_dataset(dir):
 
                     resized = cv2.resize(dst,(1024, 1024), 0, 0, interpolation=cv2.INTER_NEAREST)
                     path_burst='horiz-a'
-                    cv2.imwrite(os.path.join(path_burst, f'{i}-{path}'), resized)
+                    cv2.imwrite(os.path.join(path_burst, f'{burst}-{path}'), resized)
                     images.append(os.path.join(path_burst, f'A-{i}.jpg'))
 
     return images
