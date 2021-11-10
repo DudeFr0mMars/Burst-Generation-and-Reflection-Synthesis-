@@ -68,7 +68,7 @@ def make_dataset(dir):
 
                     resized = cv2.resize(dst,(1024, 1024), 0, 0, interpolation=cv2.INTER_NEAREST)
                     path_burst='horiz-a'
-                    cv2.imwrite(os.path.join(path_burst, f'A-{i}.jpg'), resized)
+                    cv2.imwrite(os.path.join(path_burst, f'{i}-{path}'), resized)
                     images.append(os.path.join(path_burst, f'A-{i}.jpg'))
 
     return images
