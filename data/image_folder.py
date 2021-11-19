@@ -4,12 +4,13 @@ import cv2
 from PIL import Image
 import os
 import os.path
-os.mkdir('horiz-a')
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
     '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
 ]
 
+if not os.path.exists('horiz-a'):
+    os.mkdir('horiz-a')
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
