@@ -76,7 +76,8 @@ class SynthesisDataset(BaseDataset):
         A_img_origin = A_img
 
         if self.opt.phase == 'train':
-            reflection_type = ['defocused']
+            type_listy = ['focused','defocused','ghosting']
+            reflection_type = type_list[random.randint(0, 2)]
         elif self.opt.phase == 'test':
             reflection_type = self.opt.type
 
@@ -104,10 +105,18 @@ class SynthesisDataset(BaseDataset):
 
             A_img = transforms.functional.crop(A_img, shift_y, shift_x, cols-shift_y, rows-shift_x)
             A_img = A_img.resize((rows, cols), Image.BILINEAR)
-
+        
+        A_img = np.asarray(A_img)
         A = self.get_crop_resized(A_img)
         A_origin = self.get_crop_resized(A_img_origin)
         B = self.get_resized(B_img)
+        # Generate blend masks, here: linear, horizontal fading from 1 to 0 and from 0 to 1
+        mask1 = np.repeat(np.tile(np.linspace(1, 0.6, A_img.shape[1]), (A_img.shape[0], 1))[:, :, np.newaxis], 3, axis=2)
+        mask2 = np.repeat(np.tile(np.linspace(0, 0.4, A_img.shape[1]), (A_img.shape[0], 1))[:, :, np.newaxis], 3, axis=2)
+
+        # Generate output by linear blending
+        final = np.uint8(A_img * mask1 + B_img * mask2)
+
 
         if self.opt.phase == 'train':
             index_C = random.randint(0, self.C_size - 1)
