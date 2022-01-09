@@ -76,7 +76,7 @@ class SynthesisDataset(BaseDataset):
         A_img_origin = A_img
 
         if self.opt.phase == 'train':
-            type_listy = ['focused','defocused','ghosting']
+            type_list = ['focused','defocused','ghosting']
             reflection_type = type_list[random.randint(0, 2)]
         elif self.opt.phase == 'test':
             reflection_type = self.opt.type
