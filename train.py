@@ -25,7 +25,7 @@ def print_current_errors(epoch, i, errors, t, t_data, log_name):
     with open(log_name, "a") as log_file:
         log_file.write('%s\n' % message)
 
-for epoch in range(opt.epoch_count, opt.niter + 50 + 1):
+for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     epoch_start_time = time.time()
     iter_data_time = time.time()
     epoch_iter = 0
