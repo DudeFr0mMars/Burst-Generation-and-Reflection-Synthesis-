@@ -184,10 +184,9 @@ class ReflectionSynthesisModel(BaseModel):
         real_A_origin = util.tensor2im(self.real_A_origin)
         real_B = util.tensor2im(self.real_B)
         mix_AB = util.tensor2im(self.mix_AB)
-        W_mask = util.tensor2im(self.W_mask)
 
         ret_visuals = OrderedDict([('reflection', real_A), ('transmission', real_B), ('reflection_origin', real_A_origin),
-                                   ('mix_AB', mix_AB),('W', W_mask)])
+                                   ('mix_AB', mix_AB)])
         return ret_visuals
 
     def save(self, label):
