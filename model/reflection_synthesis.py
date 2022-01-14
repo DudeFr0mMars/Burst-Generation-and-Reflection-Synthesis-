@@ -98,7 +98,6 @@ class ReflectionSynthesisModel(BaseModel):
         self.real_B = real_B.data
         self.W_A_reflection = W_A_reflection.data
         self.mix_AB = mix_AB.data
-        self.mix_AB = cv2.medianBlur(mix_AB,5)
 
     # get image paths
     def get_image_paths(self):
@@ -175,6 +174,7 @@ class ReflectionSynthesisModel(BaseModel):
         transmission = util.tensor2im(self.transmission)
         real_C = util.tensor2im(self.input_C)
         mix_AB = util.tensor2im(self.mix_AB)
+        mix_AB = cv2.medianBlur(mix_AB,5)
         W_mask = util.tensor2im(self.W_mask)
 
         ret_visuals = OrderedDict([('reflection', reflection),('transmission', transmission),
