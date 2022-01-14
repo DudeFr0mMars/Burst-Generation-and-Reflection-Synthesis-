@@ -7,6 +7,7 @@ from .base_model import BaseModel
 from . import networks
 import numpy as np
 import torch.nn as nn
+import cv2
 
 
 class ReflectionSynthesisModel(BaseModel):
@@ -82,7 +83,7 @@ class ReflectionSynthesisModel(BaseModel):
         self.real_B = self.input_B
         if self.opt.phase == 'train':
             self.real_C = self.input_C
-
+    
     def test(self):
         real_A = self.input_A
         real_A_origin = self.input_A_origin
@@ -97,6 +98,7 @@ class ReflectionSynthesisModel(BaseModel):
         self.real_B = real_B.data
         self.W_A_reflection = W_A_reflection.data
         self.mix_AB = mix_AB.data
+        self.mix_AB = cv2.medianBlur(mix_AB,5)
 
     # get image paths
     def get_image_paths(self):
