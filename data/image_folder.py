@@ -4,13 +4,12 @@ import cv2
 from PIL import Image
 import os
 import os.path
+from data.burst import create
+
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
     '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
 ]
-
-if not os.path.exists('horiz-a'):
-    os.mkdir('horiz-a')
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
@@ -19,8 +18,9 @@ def is_image_file(filename):
 def make_dataset(dir):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
-
     for root, _, fnames in sorted(os.walk(dir)):
+        if root[-1]=='B':
+            create(root)
         for fname in fnames:
             if is_image_file(fname):
                 path = os.path.join(root, fname)
