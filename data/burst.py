@@ -46,7 +46,7 @@ def create(root):
                 M = np.float32([[1, 0, 100], [0, 1, 50]])
                 rot_mat = cv2.getRotationMatrix2D(center, angle_size, 1.0)
                 new_image = cv2.warpAffine(result,rot_mat, (col, row))
-                resized = cv2.resize(new_image,(1024, 1024), 0, 0, interpolation=cv2.INTER_NEAREST)
+                resized = cv2.resize(new_image,(640, 640), 0, 0, interpolation=cv2.INTER_NEAREST)
                 path=root
                 file_new_name = fname[:-4]+str(i)+'.jpg'
                 cv2.imwrite(os.path.join(path,file_new_name), resized)
