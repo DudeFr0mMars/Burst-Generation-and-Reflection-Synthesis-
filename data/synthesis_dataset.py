@@ -81,6 +81,10 @@ class SynthesisDataset(BaseDataset):
         elif self.opt.phase == 'test':
             reflection_type = self.opt.type
 
+        A_img = self.get_resized(A_img)
+        A_origin = self.get_crop_resized(A_img_origin)
+        B_img = self.get_resized(B_img)
+
         # for different reflection types
         # Focused reflection
         if reflection_type == 'focused':
