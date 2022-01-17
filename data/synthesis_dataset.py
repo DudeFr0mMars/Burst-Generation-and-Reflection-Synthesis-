@@ -88,7 +88,7 @@ class SynthesisDataset(BaseDataset):
             B_img = np.asarray(B_img)
             # Generate blend masks, here: linear, horizontal fading from 1 to 0.6 and from 0 to 0.4
             mask1 = np.repeat(np.tile(np.linspace(1, 0.6, A_img.shape[1]), (A_img.shape[0], 1))[:, :, np.newaxis], 3, axis=2)
-            mask2 = np.repeat(np.tile(np.linspace(0, 0.4, B_img.shape[1]), (A_img.shape[0], 1))[:, :, np.newaxis], 3, axis=2)
+            mask2 = np.repeat(np.tile(np.linspace(0, 0.4, B_img.shape[1]), (B_img.shape[0], 1))[:, :, np.newaxis], 3, axis=2)
             A_img = A_img * mask1 + B_img * mask2
             # Generate output by linear blending
             A_img = Image.fromarray(A_img.astype(np.uint8))
