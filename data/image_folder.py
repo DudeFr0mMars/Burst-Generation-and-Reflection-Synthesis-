@@ -19,10 +19,7 @@ def make_dataset(dir):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
     for root, _, fnames in sorted(os.walk(dir)):
-        if root[-1]!='C':
-            create(root)
-    for root, _, fnames in sorted(os.walk(dir)):
-        if root[-1]!='C':
+        if root.split('/')[-1]=='trainA' or root.split('/')[-1]=='trainB':
             create(root)
         for fname in fnames:
             if is_image_file(fname):
